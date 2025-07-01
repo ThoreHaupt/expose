@@ -9,8 +9,15 @@ import torch
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
 
-from torchvision.models.resnet import (ResNet, Bottleneck, BasicBlock,
-                                       model_urls)
+from torchvision.models.resnet import (ResNet, Bottleneck, BasicBlock)
+from torch.hub import load_state_dict_from_url
+model_urls = {
+    'resnet50': 'https://download.pytorch.org/models/resnet50-0676ba61.pth',
+    'resnet18': 'https://download.pytorch.org/models/resnet18-f37072fd.pth',
+    'resnet34': 'https://download.pytorch.org/models/resnet34-333f7ec4.pth',
+    'resnet101': 'https://download.pytorch.org/models/resnet101-5d3b4d8f.pth',
+    'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth'
+}
 
 
 class RegressionResNet(ResNet):
@@ -111,7 +118,7 @@ def resnet18(pretrained=False, **kwargs):
     model = RegressionResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     if pretrained:
         logger.info('Loading pretrained ResNet-18')
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']),
+        model.load_state_dict(load_state_dict_from_url(model_urls['resnet18']),
                               strict=False)
     return model
 
@@ -125,7 +132,7 @@ def resnet34(pretrained=False, **kwargs):
     model = RegressionResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
     if pretrained:
         logger.info('Loading pretrained ResNet-34')
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet34']),
+        model.load_state_dict(load_state_dict_from_url(model_urls['resnet34']),
                               strict=False)
     return model
 
@@ -140,7 +147,7 @@ def resnet50(pretrained=False, **kwargs):
     if pretrained:
         logger.info('Loading pretrained ResNet-50')
         missing, unexpected = model.load_state_dict(
-            model_zoo.load_url(model_urls['resnet50']), strict=False)
+            load_state_dict_from_url(model_urls['resnet50']), strict=False)
         if len(missing) > 0:
             logger.warning(
                 f'The following keys were not found: {missing}')
@@ -159,7 +166,7 @@ def resnet101(pretrained=False, **kwargs):
     model = RegressionResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
     if pretrained:
         logger.info('Loading pretrained ResNet-101')
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet101']),
+        model.load_state_dict(load_state_dict_from_url(model_urls['resnet101']),
                               strict=False)
     return model
 
@@ -173,7 +180,7 @@ def resnet152(pretrained=False, **kwargs):
     model = RegressionResNet(Bottleneck, [3, 8, 36, 3], **kwargs)
     if pretrained:
         logger.info('Loading pretrained ResNet-152')
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet152']),
+        model.load_state_dict(load_state_dict_from_url(model_urls['resnet152']),
                               strict=False)
     return model
 
