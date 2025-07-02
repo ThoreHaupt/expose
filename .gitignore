@@ -14,6 +14,8 @@ results_fail/
 __images__/
 data/models/smplx
 
+*pth
+
 # for all external models that are downloaded sperately, I want to keep documentation in their respective directories
 models/**
 !models/**/

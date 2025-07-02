@@ -1012,6 +1012,14 @@ class SMPLXHead(nn.Module):
         body_model_output = self.body_model(
             get_skin=True, return_shaped=True, **merged_params)
 
+        if not isinstance(body_model_output, dict):
+            try:                                    # TensorOutput has _asdict()
+                body_model_output = body_model_output._asdict()
+            except AttributeError:                  # just in case
+                print(f"[WARNING] body_model_output is not a dict or TensorOutput, ")
+                body_model_output = {k: getattr(body_model_output, k)
+                                    for k in body_model_output._fields}
+
         # Split the vertices, joints, etc. to stages
         out_params = defaultdict(lambda: dict())
         for key in body_model_output:
@@ -1466,8 +1474,20 @@ class SMPLXHead(nn.Module):
             # Compute the mesh using the new hand and face parameters
             final_body_model_output = self.body_model(
                 get_skin=True, return_shaped=True, **final_body_parameters)
+            # If the body model returns a TensorOutput, convert it to a dict
+            if not isinstance(final_body_model_output, dict):
+                try:                                    # TensorOutput has _asdict()
+                    final_body_model_output = final_body_model_output._asdict()
+                except AttributeError:                  # just in case
+                    print(f"[WARNING] body_model_output is not a dict or TensorOutput, ")
+                    final_body_model_output = {k: getattr(final_body_model_output, k)
+                                    for k in final_body_model_output._fields}
+
+            # if hasattr(final_body_model_output, 'to_dict'):
+            #     final_body_model_output = final_body_model_output.to_dict()
             param_dicts.append({
-                **final_body_parameters, **final_body_model_output})
+                **final_body_parameters, **final_body_model_output
+            })
 
         if (self.apply_hand_network_on_body or
                 self.apply_head_network_on_body):
