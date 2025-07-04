@@ -1018,7 +1018,7 @@ class SMPLXHead(nn.Module):
             except AttributeError:                  # just in case
                 print(f"[WARNING] body_model_output is not a dict or TensorOutput, ")
                 body_model_output = {k: getattr(body_model_output, k)
-                                    for k in body_model_output._fields}
+                                    for k in body_model_output.__dict__}
 
         # Split the vertices, joints, etc. to stages
         out_params = defaultdict(lambda: dict())
@@ -1479,9 +1479,9 @@ class SMPLXHead(nn.Module):
                 try:                                    # TensorOutput has _asdict()
                     final_body_model_output = final_body_model_output._asdict()
                 except AttributeError:                  # just in case
-                    print(f"[WARNING] body_model_output is not a dict or TensorOutput, ")
+                    print(f"[WARNING] body_model_output is not a dict or TensorOutput: {type(final_body_model_output)}")
                     final_body_model_output = {k: getattr(final_body_model_output, k)
-                                    for k in final_body_model_output._fields}
+                                    for k in final_body_model_output.__dict__}
 
             # if hasattr(final_body_model_output, 'to_dict'):
             #     final_body_model_output = final_body_model_output.to_dict()
