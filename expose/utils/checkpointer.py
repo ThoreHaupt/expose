@@ -40,7 +40,7 @@ class Checkpointer(object):
         self.adv_optimizer = adv_optimizer
 
         self.save_dir = save_dir
-        if self.rank == 0:
+        if self.rank == 0 and not os.path.exists(self.save_dir):
             logger.info(f'Creating directory {self.save_dir}')
             os.makedirs(self.save_dir, exist_ok=True)
         self.pretrained = pretrained
@@ -79,8 +79,7 @@ class Checkpointer(object):
             if len(self.pretrained) > 1:
                 self.pretrained = osp.expandvars(self.pretrained)
                 load_pretrained = True
-                save_fn = osp.join(
-                    self.pretrained, 'checkpoints', 'latest_checkpoint')
+                save_fn = self.pretrained
             # If neither the pretrained model exists nor there is a previous
             # checkpoint then initialize from scratch
             if not osp.exists(save_fn):
@@ -88,8 +87,9 @@ class Checkpointer(object):
                 return {}
 
         logger.info('Load pretrained: {}', load_pretrained)
-        with open(save_fn, 'r') as f:
-            latest_ckpt_fn = f.read().strip()
+        # with open(save_fn, 'r') as f:
+        #     latest_ckpt_fn = f.read().strip()
+        latest_ckpt_fn = save_fn
         logger.warning(f'Loading checkpoint from {latest_ckpt_fn}!')
 
         if self.distributed:
